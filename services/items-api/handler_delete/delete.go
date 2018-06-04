@@ -1,11 +1,13 @@
 package handler_delete
 
 import (
+	"errors"
+
 	"github.com/denperov/owm-task/libs/types"
 )
 
 type Storage interface {
-	DeleteUserItem(ownerID types.Login, itemID types.ItemID)
+	DeleteUserItem(ownerID types.Login, itemID types.ItemID) bool
 }
 
 type handler struct {
@@ -28,10 +30,14 @@ type Params struct {
 type Result struct {
 }
 
+const ItemNotFoundError = "item not found"
+
 func (h *handler) Execute(params interface{}) (interface{}, error) {
 	p := params.(*Params)
 
-	h.Storage.DeleteUserItem(p.OwnerID, p.ItemID)
+	if !h.Storage.DeleteUserItem(p.OwnerID, p.ItemID) {
+		return nil, errors.New(ItemNotFoundError)
+	}
 
 	return &Result{}, nil
 }

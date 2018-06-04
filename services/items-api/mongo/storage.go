@@ -62,8 +62,16 @@ func (s *Storage) CreateUserItem(ownerID types.Login, item *types.Item) {
 	}
 }
 
-func (s *Storage) DeleteUserItem(ownerID types.Login, itemID types.ItemID) {
-	s.items().Remove(bson.M{"ownerid": ownerID, "item.id": itemID})
+func (s *Storage) DeleteUserItem(ownerID types.Login, itemID types.ItemID) bool {
+	err := s.items().Remove(bson.M{"ownerid": ownerID, "item.id": itemID})
+	switch err {
+	case nil:
+		return true
+	case mgo.ErrNotFound:
+		return false
+	default:
+		panic(err)
+	}
 }
 
 func (s *Storage) GetUserItems(ownerID types.Login) []*types.Item {
