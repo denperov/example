@@ -1,4 +1,4 @@
-# owm-task
+# example
 
 ## Сборка и запуск
 ```make run```
